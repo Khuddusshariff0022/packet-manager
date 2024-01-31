@@ -125,8 +125,8 @@ public class IdSchemaUtils {
         String responseString = null;
         try {
             JSONObject jsonObject = new JSONObject(response);
-            JSONObject respObj = (JSONObject) jsonObject.get(RESPONSE);
-            responseString = respObj != null ? (String) respObj.get(SCHEMA_JSON) : null;
+                JSONObject respObj = (JSONObject) (jsonObject.get(RESPONSE)!=JSONObject.NULL?jsonObject.get(RESPONSE):null);
+                responseString = respObj != null ? (String) respObj.get(SCHEMA_JSON) : null;
         } catch (JSONException e) {
             throw new IOException(e);
         }
