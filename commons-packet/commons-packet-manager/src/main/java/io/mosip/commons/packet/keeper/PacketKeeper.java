@@ -115,6 +115,7 @@ public class PacketKeeper {
      * @return
      */
     public boolean checkSignature(Packet packet, byte[] encryptedSubPacket) throws NoSuchAlgorithmException {
+        LOGGER.info("Packet Signature ===> " + packet.getPacketInfo().getSignature());
         boolean result = disablePacketSignatureVerification ? true :
         		getCryptoService().verify(helper.getRefId(
                         packet.getPacketInfo().getId(), packet.getPacketInfo().getRefId()), packet.getPacket()
@@ -239,6 +240,7 @@ public class PacketKeeper {
     }
 
     private IPacketCryptoService getCryptoService() {
+        LOGGER.info("Crypto Name ===> " + cryptoName);
         if (cryptoName.equalsIgnoreCase(onlineCrypto.getClass().getSimpleName()))
             return onlineCrypto;
         else if (cryptoName.equalsIgnoreCase(offlineCrypto.getClass().getSimpleName()))

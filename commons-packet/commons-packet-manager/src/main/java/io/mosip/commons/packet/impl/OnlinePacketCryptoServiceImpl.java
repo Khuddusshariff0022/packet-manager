@@ -273,7 +273,15 @@ public class OnlinePacketCryptoServiceImpl implements IPacketCryptoService {
             ResponseEntity<String> response = restTemplate.exchange(keymanagerCsverifysignUrl, HttpMethod.POST, httpEntity,
                     String.class);
             LinkedHashMap responseMap = (LinkedHashMap) mapper.readValue(response.getBody(), LinkedHashMap.class).get("response");//.get("signature");
-            if (responseMap != null && responseMap.size() > 0) {
+           LOGGER.info("Response from keymanager verify API ===> " + responseMap);
+            if (response.getStatusCode().is2xxSuccessful()) {
+                LOGGER.info(PacketManagerLogger.SESSIONID, PacketManagerLogger.REFERENCEID, refId,
+                        "Signature verification success.");
+            } else {
+                LOGGER.error(PacketManagerLogger.SESSIONID, PacketManagerLogger.REFERENCEID, refId,
+                        "Signature verification failed.");
+            }
+           if (responseMap != null && responseMap.size() > 0) {
                 boolean result = responseMap.get("verified") != null && responseMap.get("verified").toString().equalsIgnoreCase("true");
                 if (!result)
                     LOGGER.error(PacketManagerLogger.SESSIONID, PacketManagerLogger.REFERENCEID, refId,
