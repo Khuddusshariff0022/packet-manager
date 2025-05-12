@@ -270,6 +270,7 @@ public class OnlinePacketCryptoServiceImpl implements IPacketCryptoService {
                     .parse(DateUtils.getUTCCurrentDateTimeString(DATETIME_PATTERN), format);
             request.setRequesttime(localdatetime);
             HttpEntity<RequestWrapper<TpmSignVerifyRequestDto>> httpEntity = new HttpEntity<>(request);
+            LOGGER.info("Request ===> "+request.toString());
             ResponseEntity<String> response = restTemplate.exchange(keymanagerCsverifysignUrl, HttpMethod.POST, httpEntity,
                     String.class);
             LinkedHashMap responseMap = (LinkedHashMap) mapper.readValue(response.getBody(), LinkedHashMap.class).get("response");//.get("signature");
