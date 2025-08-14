@@ -8,6 +8,8 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Lazy;
@@ -32,6 +34,9 @@ import io.mosip.kernel.core.logger.spi.Logger;
 public class PacketReader {
 
     private static final Logger LOGGER = PacketManagerLogger.getLogger(PacketReader.class);
+
+//    @Value("mosip.role.commons-packet.deletableCache")
+//    private String deletableCache;
 
     @Autowired(required = false)
     @Qualifier("referenceReaderProviders")
@@ -153,6 +158,14 @@ public class PacketReader {
         LOGGER.info(PacketManagerLogger.SESSIONID, PacketManagerLogger.REGISTRATIONID, id,
                 "info called");
         return packetKeeper.getAll(id);
+    }
+
+    @PreAuthorize("hasRole('DATA_READ')")
+    @CacheEvict(value = "info", key = "{#id}")
+    public Boolean deleteCache(String id) {
+        LOGGER.info(PacketManagerLogger.SESSIONID, PacketManagerLogger.REGISTRATIONID, id,
+                "CacheEvicted Successfully");
+        return true;
     }
 
     /**

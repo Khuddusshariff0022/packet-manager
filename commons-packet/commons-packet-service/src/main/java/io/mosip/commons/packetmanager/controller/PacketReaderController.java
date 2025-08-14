@@ -5,10 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.mosip.commons.packetmanager.dto.SourceProcessDto;
+import io.mosip.commons.packetmanager.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,15 +20,6 @@ import io.mosip.commons.packet.dto.Document;
 import io.mosip.commons.packet.dto.TagRequestDto;
 import io.mosip.commons.packet.dto.TagResponseDto;
 import io.mosip.commons.packet.facade.PacketReader;
-import io.mosip.commons.packetmanager.dto.BiometricRequestDto;
-import io.mosip.commons.packetmanager.dto.DocumentDto;
-import io.mosip.commons.packetmanager.dto.FieldDto;
-import io.mosip.commons.packetmanager.dto.FieldDtos;
-import io.mosip.commons.packetmanager.dto.FieldResponseDto;
-import io.mosip.commons.packetmanager.dto.InfoDto;
-import io.mosip.commons.packetmanager.dto.InfoRequestDto;
-import io.mosip.commons.packetmanager.dto.InfoResponseDto;
-import io.mosip.commons.packetmanager.dto.ValidatePacketResponse;
 import io.mosip.commons.packetmanager.service.PacketReaderService;
 import io.mosip.kernel.biometrics.entities.BiometricRecord;
 import io.mosip.kernel.core.http.RequestWrapper;
@@ -246,6 +238,28 @@ public class PacketReaderController {
             resultFields = packetReaderService.info(id);
         ResponseWrapper<InfoResponseDto> response = getResponseWrapper();
         response.setResponse(resultFields);
+        return response;
+    }
+
+
+    @ResponseFilter
+    @PreAuthorize("hasAnyRole(@authorizedRoles.getDeleteCache())")
+    @DeleteMapping(path = "/deleteCache", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "deleteCache", description = "deleteCache", tags = { "packet-reader-controller" })
+    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
+    public ResponseWrapper<DeleteCacheResponseDto> deleteCache(@RequestBody(required = true) RequestWrapper<DeleteCacheRequestDto> request) {
+        String id = request.getRequest().getId();
+        Boolean isCacheEvicted=false;
+        if (id != null && !id.isEmpty())
+            isCacheEvicted = packetReader.deleteCache(id);
+        ResponseWrapper<DeleteCacheResponseDto> response = getResponseWrapper();
+        DeleteCacheResponseDto deleteCacheResponseDto=new DeleteCacheResponseDto();
+        deleteCacheResponseDto.setResponce(isCacheEvicted);
+        response.setResponse(deleteCacheResponseDto);
         return response;
     }
 
