@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.mosip.commons.packet.util.PacketManagerLogger;
 import io.mosip.commons.packetmanager.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -255,10 +256,14 @@ public class PacketReaderController {
         String id = request.getRequest().getId();
         Boolean isCacheEvicted=false;
         if (id != null && !id.isEmpty())
-            isCacheEvicted = packetReader.deleteCache(id);
+            try {
+                isCacheEvicted = packetReader.deleteCache(id);
+            }catch (Exception e){
+                isCacheEvicted=false;
+            }
         ResponseWrapper<DeleteCacheResponseDto> response = getResponseWrapper();
         DeleteCacheResponseDto deleteCacheResponseDto=new DeleteCacheResponseDto();
-        deleteCacheResponseDto.setResponce(isCacheEvicted);
+        deleteCacheResponseDto.setResponse(isCacheEvicted);
         response.setResponse(deleteCacheResponseDto);
         return response;
     }

@@ -6,5 +6,5 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode
 public class DeleteCacheResponseDto {
-    Boolean responce;
+    Boolean response;
 }
